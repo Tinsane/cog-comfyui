@@ -38,6 +38,10 @@ def should_optimise_images(output_format: str, output_quality: int):
     ]
 
 
+def delete_file(path):
+    return os.remove(path)
+
+
 def move_file(src, dst):
     return shutil.move(src, dst)
 
@@ -57,6 +61,8 @@ def optimise_image_files(
                     optimize=True,
                 )
                 optimised_files.append(optimised_file_path)
+                if optimised_file_path != file.as_posix():
+                    _ = executor.submit(delete_file, file.as_posix())
             else:
                 optimised_files.append(file)
 
