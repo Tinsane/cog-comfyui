@@ -6,6 +6,8 @@ import time
 import json
 import urllib
 import uuid
+from typing import List
+
 import websocket
 import random
 import requests
@@ -309,7 +311,7 @@ class ComfyUI:
             output = json.loads(response.read())
             return output[prompt_id]["outputs"]
 
-    def get_files(self, directories, prefix="", file_extensions=None):
+    def get_files(self, directories, prefix="", file_extensions=None) -> List[Path]:
         files = []
         if isinstance(directories, str):
             directories = [directories]
