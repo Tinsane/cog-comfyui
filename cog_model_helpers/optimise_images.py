@@ -1,10 +1,17 @@
-from cog import Input
+import os
+import shutil
+from typing import List
+from concurrent.futures import ThreadPoolExecutor
+
+from cog import Input, Path
 from PIL import Image
 
 IMAGE_FILE_EXTENSIONS = [".jpg", ".jpeg", ".png"]
 FORMAT_CHOICES = ["webp", "jpg", "png"]
 DEFAULT_FORMAT = "webp"
 DEFAULT_QUALITY = 95
+
+executor = ThreadPoolExecutor(max_workers=10)
 
 
 def predict_output_format() -> str:
@@ -31,9 +38,13 @@ def should_optimise_images(output_format: str, output_quality: int):
     ]
 
 
+def move_file(src, dst):
+    return shutil.move(src, dst)
+
+
 def optimise_image_files(
-    output_format: str = DEFAULT_FORMAT, output_quality: int = DEFAULT_QUALITY, files=[]
-):
+    output_format: str = DEFAULT_FORMAT, output_quality: int = DEFAULT_QUALITY, files: List[Path] = [], return_url: bool = False, s3_path: str = ""
+) -> List[Path]:
     if should_optimise_images(output_format, output_quality):
         optimised_files = []
         for file in files:
@@ -49,6 +60,14 @@ def optimise_image_files(
             else:
                 optimised_files.append(file)
 
-        return optimised_files
+        to_return = optimised_files
     else:
-        return files
+        to_return = files
+    if return_url:
+        for file in to_return:
+            shutil.move(file.as_posix(), os.path.join(s3_path, file.name))
+        return []
+    else:
+        for file in to_return:
+            _ = executor.submit(move_file, file.as_posix(), os.path.join(s3_path, file.name))
+        return to_return
