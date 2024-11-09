@@ -18,6 +18,7 @@ os.environ["HF_HUB_ENABLE_HF_TRANSFER"] = "1"
 
 mimetypes.add_type("image/webp", ".webp")
 OUTPUT_DIR = "/tmp/outputs"
+S3_DIR = "ComfyUI/outputs"
 INPUT_DIR = "/tmp/inputs"
 COMFYUI_TEMP_OUTPUT_DIR = "ComfyUI/temp"
 ALL_DIRECTORIES = [OUTPUT_DIR, INPUT_DIR, COMFYUI_TEMP_OUTPUT_DIR]
@@ -123,9 +124,13 @@ class Predictor(BasePredictor):
             description="Force reset the ComfyUI cache before running the workflow. Useful for debugging.",
             default=False,
         ),
+        return_url: bool = Input(
+            description="",
+            default=False,
+        )
     ) -> List[Path]:
         """Run a single prediction on the model"""
-        self.comfyUI.cleanup(ALL_DIRECTORIES)
+        self.comfyUI.cleanup([INPUT_DIR, COMFYUI_TEMP_OUTPUT_DIR])
 
         if input_file:
             self.handle_input_file(input_file)
@@ -156,5 +161,5 @@ class Predictor(BasePredictor):
             output_directories.append(COMFYUI_TEMP_OUTPUT_DIR)
 
         return optimise_images.optimise_image_files(
-            output_format, output_quality, self.comfyUI.get_files(output_directories)
+            output_format, output_quality, self.comfyUI.get_files(output_directories), return_url, S3_DIR
         )
