@@ -61,7 +61,7 @@ def optimise_image_files(
                     optimize=True,
                 )
                 optimised_files.append(optimised_file_path)
-                if optimised_file_path != file.as_posix():
+                if optimised_file_path.as_posix() != file.as_posix():
                     _ = executor.submit(delete_file, file.as_posix())
             else:
                 optimised_files.append(file)
