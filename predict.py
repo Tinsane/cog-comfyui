@@ -1,3 +1,4 @@
+import json
 import os
 import shutil
 import tarfile
@@ -21,6 +22,7 @@ OUTPUT_DIR = "/tmp/outputs"
 S3_DIR = "ComfyUI/outputs"
 INPUT_DIR = "/tmp/inputs"
 COMFYUI_TEMP_OUTPUT_DIR = "ComfyUI/temp"
+PREFETCH_WORKFLOW = "prefetch.json"
 ALL_DIRECTORIES = [OUTPUT_DIR, INPUT_DIR, COMFYUI_TEMP_OUTPUT_DIR]
 
 IMAGE_TYPES = [".jpg", ".jpeg", ".png", ".webp"]
@@ -37,6 +39,7 @@ class Predictor(BasePredictor):
 
         self.comfyUI = ComfyUI("127.0.0.1:8188")
         self.comfyUI.start_server(OUTPUT_DIR, INPUT_DIR)
+        self._prefetch_weights()
 
     def handle_user_weights(self, weights: str):
         print(f"Downloading user weights from: {weights}")
@@ -163,3 +166,8 @@ class Predictor(BasePredictor):
         return optimise_images.optimise_image_files(
             output_format, output_quality, self.comfyUI.get_files(output_directories), return_url, S3_DIR
         )
+
+    def _prefetch_weights(self):
+        with open(PREFETCH_WORKFLOW, 'r') as wf_file:
+            wf = json.load(wf_file)
+        self.predict(wf)
