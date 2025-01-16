@@ -133,7 +133,7 @@ class Predictor(BasePredictor):
 
         self.comfyUI.connect()
 
-        if force_reset_cache or not randomise_seeds:
+        if force_reset_cache:
             self.comfyUI.reset_execution_cache()
 
         if randomise_seeds:
