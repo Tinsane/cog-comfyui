@@ -23,6 +23,7 @@ S3_DIR = "ComfyUI/outputs"
 INPUT_DIR = "/tmp/inputs"
 COMFYUI_TEMP_OUTPUT_DIR = "ComfyUI/temp"
 PREFETCH_WORKFLOW = "prefetch.json"
+SETUP_SENTINEL = "/tmp/setup"
 ALL_DIRECTORIES = [OUTPUT_DIR, INPUT_DIR, COMFYUI_TEMP_OUTPUT_DIR]
 
 IMAGE_TYPES = [".jpg", ".jpeg", ".png", ".webp"]
@@ -180,3 +181,5 @@ class Predictor(BasePredictor):
             force_reset_cache=False,
             return_url=False,
         )
+        with open(SETUP_SENTINEL, 'w') as sentinel:
+            sentinel.write("Done\n")
