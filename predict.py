@@ -169,5 +169,14 @@ class Predictor(BasePredictor):
 
     def _prefetch_weights(self):
         with open(PREFETCH_WORKFLOW, 'r') as wf_file:
-            wf = json.load(wf_file)
-        self.predict(wf)
+            wf = wf_file.read()
+        self.predict(
+            wf,
+            input_file=None,
+            return_temp_files=False,
+            output_format="webp",
+            output_quality=0,
+            randomise_seeds=True,
+            force_reset_cache=False,
+            return_url=False,
+        )
