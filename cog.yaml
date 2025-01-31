@@ -5,8 +5,8 @@ build:
     - ffmpeg
   python_version: "3.12"
   python_packages:
-    - torch
-    - torchvision
+    - torch==2.5.1
+    - torchvision==0.20.1
     - torchaudio
     - torchsde
     - einops
@@ -105,5 +105,6 @@ build:
   run:
     - curl -o /usr/local/bin/pget -L "https://github.com/replicate/pget/releases/latest/download/pget_$(uname -s)_$(uname -m)" && chmod +x /usr/local/bin/pget
     - pip install onnxruntime-gpu --extra-index-url https://aiinfra.pkgs.visualstudio.com/PublicPackages/_packaging/onnxruntime-cuda-12/pypi/simple/
+    - pip install -U xformers --index-url https://download.pytorch.org/whl/cu124
 predict: "predict.py:Predictor"
 train: "train.py:train"
